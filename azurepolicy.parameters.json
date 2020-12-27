@@ -1,23 +1,30 @@
 {
     "domainToJoin": {
-      "type": "String",
-      "metadata": {
-        "displayName": "Domain to join",
-        "description": "Domain name that the virtual machine will be joined to"
-      }
+        "type": "String",
+        "metadata": {
+            "displayName": "Domain to join",
+            "description": "Domain name that the virtual machine will be joined to"
+        }
     },
     "domainUsername": {
-      "type": "String",
-      "metadata": {
-        "displayName": "Domain Username",
-        "description": "The username of a domain account that has permissions to join machines to the domain"
-      }
+        "type": "String",
+        "metadata": {
+            "displayName": "Domain Username",
+            "description": "The username of a domain account that has permissions to join machines to the domain"
+        }
     },
     "domainPassword": {
-      "type": "String",
-      "metadata": {
-        "displayName": "Domain Password",
-        "description": "Password for the domaind user account with permissions to join machines to the the domain"
-      }
+        "type": "String",
+        "metadata": {
+            "displayName": "Domain Password",
+            "description": "Password for the domaind user account with permissions to join machines to the the domain"
+        }
+    },
+    "ouPath": {
+        "type": "String",
+        "metadata": {
+            "displayName": "OU Path",
+            "description": "The OU Path for where the computer account should be placed in AD"
+        }
     }
-  }
+}
