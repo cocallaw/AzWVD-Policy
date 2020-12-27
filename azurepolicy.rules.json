@@ -31,6 +31,9 @@
                         "machineName": {
                             "value": "[field('name')]"
                         },
+                        "ouPath": {
+                            "value": "[field('ouPath')]"
+                        },
                         "location": {
                             "value": "[field('location')]"
                         },
@@ -52,6 +55,9 @@
                                 "type": "String"
                             },
                             "machineName": {
+                                "type": "String"
+                            },
+                            "ouPath": {
                                 "type": "String"
                             },
                             "location": {
