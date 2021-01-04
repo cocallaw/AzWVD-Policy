@@ -32,7 +32,7 @@
                             "value": "[field('name')]"
                         },
                         "ouPath": {
-                            "value": "[field('ouPath')]"
+                            "value": "[parameters('ouPath')]"
                         },
                         "location": {
                             "value": "[field('location')]"
