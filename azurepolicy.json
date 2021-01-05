@@ -1,0 +1,141 @@
+{
+  "properties": {
+    "displayName": "Deploy Domain Join Extension to Azure VMs",
+    "mode": "Indexed",
+    "description": "Deploys the Domain Join extension to Azure VMs.",
+    "metadata": {
+      "category": "Automation"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          }
+        ]
+      },
+      "then": {
+        "effect": "deployIfNotExists",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/xxxxGUIDxxxx"
+          ],
+          "type": "[if(equals(tolower(field('Type')),'microsoft.compute/virtualmachines'),'Microsoft.Compute/virtualMachines/extensions','Microsoft.HybridCompute/machines/extensions')]",
+          "name": "joindomain",
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "parameters": {
+                "domainToJoin": {
+                  "value": "[parameters('domainToJoin')]"
+                },
+                "domainUsername": {
+                  "value": "[parameters('domainUsername')]"
+                },
+                "domainPassword": {
+                  "value": "[parameters('domainPassword')]"
+                },
+                "machineName": {
+                  "value": "[field('name')]"
+                },
+                "ouPath": {
+                  "value": "[parameters('ouPath')]"
+                },
+                "location": {
+                  "value": "[field('location')]"
+                },
+                "type": {
+                  "value": "[field('type')]"
+                }
+              },
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "domainToJoin": {
+                    "type": "String"
+                  },
+                  "domainUsername": {
+                    "type": "String"
+                  },
+                  "domainPassword": {
+                    "type": "String"
+                  },
+                  "machineName": {
+                    "type": "String"
+                  },
+                  "ouPath": {
+                    "type": "String"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "condition": "[equals(toLower(parameters('type')), toLower('Microsoft.Compute/virtualMachines'))]",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('machineName'),'/joindomain')]",
+                    "apiVersion": "2015-06-15",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [],
+                    "properties": {
+                      "publisher": "Microsoft.Compute",
+                      "type": "JsonADDomainExtension",
+                      "typeHandlerVersion": "1.3",
+                      "autoUpgradeMinorVersion": true,
+                      "settings": {
+                        "Name": "[parameters('domainToJoin')]",
+                        "OUPath": "[parameters('ouPath')]",
+                        "User": "[concat(parameters('domainToJoin'), '\\', parameters('domainUsername'))]",
+                        "Restart": "true",
+                        "Options": 3
+                      },
+                      "protectedSettings": {
+                        "Password": "[parameters('domainPassword')]"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        } 
+      }
+    }
+  },
+  "parameters": {
+    "domainToJoin": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Domain to join",
+        "description": "Domain name that the virtual machine will be joined to"
+      }
+    },
+    "domainUsername": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Domain Username",
+        "description": "The username of a domain account that has permissions to join machines to the domain"
+      }
+    },
+    "domainPassword": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Domain Password",
+        "description": "Password for the domaind user account with permissions to join machines to the the domain"
+      }
+    },
+    "ouPath": {
+      "type": "String",
+      "metadata": {
+        "displayName": "OU Path",
+        "description": "The OU Path for where the computer account should be placed in AD"
+      }
+    }
+  }
+}
