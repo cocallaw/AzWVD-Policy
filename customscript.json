@@ -1,0 +1,22 @@
+{
+    "apiVersion": "2019-07-01",
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "[concat(parameters('machineName'),'/customscript')]",
+    "location": "[parameters('location')]",
+    "dependsOn": [ ],
+    "tags": { },
+    "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.8",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+            "fileUris": [
+                "[parameters('scriptURI')]"
+            ]
+        },
+        "protectedSettings": {
+            "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File script.ps1')]"
+        }
+    }
+}
