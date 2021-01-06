@@ -1,9 +1,12 @@
 {
-    "apiVersion": "2019-07-01",
+    "condition": "[equals(toLower(parameters('type')), toLower('Microsoft.Compute/virtualMachines'))]",
     "type": "Microsoft.Compute/virtualMachines/extensions",
     "name": "[concat(parameters('machineName'),'/customscript')]",
+    "apiVersion": "2019-07-01",
     "location": "[parameters('location')]",
-    "dependsOn": [ ],
+    "dependsOn": [ 
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions/', concat(parameters('machineName'),'/joindomain')]"
+    ],
     "tags": { },
     "properties": {
         "publisher": "Microsoft.Compute",
