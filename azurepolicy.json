@@ -34,7 +34,14 @@
                   "displayName": "OU Path",
                   "description": "The OU Path for where the computer account should be placed in AD"
               }
-          }
+          },
+          "scriptURI": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Script URI",
+                "description": "The URI of the Script to be run on the VM"
+            }
+        }
       },
       "policyRule": {
           "if": {
@@ -48,7 +55,7 @@
                       "/providers/microsoft.authorization/roleDefinitions/xxxxGUIDxxxx"
                   ],
                   "type": "[if(equals(tolower(field('Type')),'microsoft.compute/virtualmachines'),'Microsoft.Compute/virtualMachines/extensions','Microsoft.HybridCompute/machines/extensions')]",
-                  "name": "joindomain",
+                  "name": "wvdsetup",
                   "deployment": {
                       "properties": {
                           "mode": "incremental",
@@ -73,7 +80,10 @@
                               },
                               "type": {
                                   "value": "[field('type')]"
-                              }
+                              },
+                              "scriptURI": {
+                                "value": "[parameters('scriptURI')]"
+                            }
                           },
                           "template": {
                               "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -99,7 +109,10 @@
                                   },
                                   "type": {
                                       "type": "string"
-                                  }
+                                  },
+                                  "scriptURI": {
+                                    "type": "string"
+                                }
                               },
                               "resources": [
                                   {
@@ -125,7 +138,32 @@
                                               "Password": "[parameters('domainPassword')]"
                                           }
                                       }
-                                  }
+                                  },
+                                  {
+                                    "condition": "[equals(toLower(parameters('type')), toLower('Microsoft.Compute/virtualMachines'))]",
+                                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                                    "name": "[concat(parameters('machineName'),'/customscript')]",
+                                    "apiVersion": "2019-07-01",
+                                    "location": "[parameters('location')]",
+                                    "dependsOn": [ 
+                                        "[resourceId('Microsoft.Compute/virtualMachines/extensions/', concat(parameters('machineName'),'/joindomain')]"
+                                    ],
+                                    "tags": { },
+                                    "properties": {
+                                        "publisher": "Microsoft.Compute",
+                                        "type": "CustomScriptExtension",
+                                        "typeHandlerVersion": "1.8",
+                                        "autoUpgradeMinorVersion": true,
+                                        "settings": {
+                                            "fileUris": [
+                                                "[parameters('scriptURI')]"
+                                            ]
+                                        },
+                                        "protectedSettings": {
+                                            "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File script.ps1')]"
+                                        }
+                                    }
+                                }
                               ]
                           }
                       }
